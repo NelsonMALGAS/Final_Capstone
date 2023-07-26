@@ -158,8 +158,7 @@ dialog {
 }
 
 .fav-btn {
-	margin-left: 10px;
-	margin-top: 20px;
+	margin: 20px 0 10px 10px;
 }
 .sort {
 	margin-right: 10px;
@@ -193,6 +192,19 @@ strong .number {
 
 .form-check-input {
 	background-color: rgb(64, 64, 223);
+}
+
+a {
+	color: blue; /* Change hyperlink text color */
+	text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+	color: red;
+	text-decoration: underline;
+}
+.close {
+	margin-left: 25px;
 }
 
 @media (max-width: 768px) {
