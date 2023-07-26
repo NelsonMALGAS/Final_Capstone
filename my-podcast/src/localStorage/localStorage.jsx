@@ -1,5 +1,5 @@
 /**
- * Saves data to the local storage
+ * The local storage where the App saves the data in
  *
  * @param {String} key -The key under which the data will be stored
  * @param {any} data -The data to be stored in the local storage
