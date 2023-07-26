@@ -1,3 +1,5 @@
+# Author : Nelson Zongezile Malgas
+
 # Podcast App
 
 This is a React-based Podcast App that allows users to browse and search for podcasts, view podcast details, and listen to episodes. The app also provides features for users to mark their favorite shows and submit feedback.
@@ -47,8 +49,6 @@ This is a React-based Podcast App that allows users to browse and search for pod
 ## Authentication
 
 This app includes a simple authentication feature. If the user has a valid user token stored in local storage, they will be considered authenticated. The authentication status determines whether to display the main content or the authentication component.
-
-Please note that the authentication implementation here is simplified for demonstration purposes. In a real-world application, you should use a proper authentication system and handle user authentication securely.
 
 ## Feedback
 
