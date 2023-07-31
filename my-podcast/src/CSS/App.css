@@ -79,6 +79,11 @@ nav {
 	background-size: contain;
 }
 
+.url-div {
+	border: 1px solid blue;
+	border-radius: 15px;
+	width: 50%;
+}
 .navbar {
 	background-color: #f8f9fa;
 	padding: 10px 20px;
