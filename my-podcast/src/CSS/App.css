@@ -127,6 +127,18 @@ dialog {
 	background-color: #ff4081;
 }
 
+.feedback {
+	text-align: center;
+	background-color: grey;
+	border: 1px solid blue;
+	justify-content: space-around;
+	width: 500px;
+}
+
+#feedbackTextarea {
+	margin-left: 20%;
+}
+
 .modal-body li {
 	list-style: none;
 }
@@ -261,6 +273,9 @@ a:hover {
 		width: 75px;
 		height: 75px;
 	}
+	#feedbackTextarea {
+		margin-left: 20%;
+	}
 }
 
 @media (max-width: 576px) {
@@ -289,6 +304,10 @@ a:hover {
 		box-shadow: none;
 		border-radius: 0;
 		z-index: 1050;
+	}
+
+	#feedbackTextarea {
+		margin-left: 20%;
 	}
 }
 
@@ -358,5 +377,8 @@ a:hover {
 		box-shadow: none;
 		border-radius: 0;
 		z-index: 1050;
+	}
+	#feedbackTextarea {
+		margin-left: 5%;
 	}
 }
