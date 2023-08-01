@@ -19,7 +19,7 @@ export default function Feedback() {
 	};
 
 	return (
-		<div className="container form-feedback mt-5">
+		<div className="container  mt-5 feedback">
 			<strong>
 				<h2>Feedback Form</h2>
 			</strong>
