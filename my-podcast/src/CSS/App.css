@@ -82,7 +82,7 @@ nav {
 .url-div {
 	border: 1px solid blue;
 	border-radius: 15px;
-	width: 50%;
+	width: 20%;
 }
 .navbar {
 	background-color: #f8f9fa;
@@ -129,8 +129,9 @@ dialog {
 
 .feedback {
 	text-align: center;
-	background-color: grey;
+	background-color: rgb(249, 244, 244);
 	border: 1px solid blue;
+	border-radius: 15px;
 	justify-content: space-around;
 	width: 500px;
 }
