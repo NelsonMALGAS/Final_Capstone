@@ -36,6 +36,11 @@ export const UserInstructions = () => {
 							<div className="modal-body">
 								<ol>
 									<li>
+										Firstly <strong>SIGN UP OR SIGN-IN</strong> before accessing
+										the podcast
+									</li>
+									<hr />
+									<li>
 										Enter your search criteria in the search input field. You
 										can search by show title.
 									</li>
