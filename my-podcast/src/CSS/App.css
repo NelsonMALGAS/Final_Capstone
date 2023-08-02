@@ -195,6 +195,11 @@ dialog {
 .fav-btn {
 	margin: 20px 0 10px 10px;
 }
+
+.episodes-modal-btn {
+	margin-left: 20px;
+	margin-top: 10px;
+}
 .sort {
 	margin-right: 10px;
 	border-radius: 5px;
