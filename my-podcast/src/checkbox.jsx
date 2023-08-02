@@ -29,7 +29,7 @@ export const CheckboxItem = ({ id, label, checked, onChange }) => (
 CheckboxItem.propTypes = {
 	id: PropTypes.string.isRequired,
 	label: PropTypes.string.isRequired,
-	checked: PropTypes.bool.isRequired,
+	checked: PropTypes.bool,
 	onChange: PropTypes.func.isRequired,
 };
 
