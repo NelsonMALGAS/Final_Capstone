@@ -1,14 +1,31 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
+/**
+ * A React component that displays a button to view favorite episodes and a modal to show the favorite episodes list.
+ * @component
+ * @param {Object} props - The properties for the FavoriteEpisodes component.
+ * @param {Array} props.episodes - An array of favorite episodes to be displayed in the modal.
+ * @returns {JSX.Element} The FavoriteEpisodes component JSX element.
+ */
 function FavoriteEpisodes(props) {
 	const { episodes } = props;
 	const [modalOpen, setModalOpen] = useState(false);
 
+	/**
+	 * Opens the modal to display the favorite episodes list.
+	 * @function
+	 * @inner
+	 */
 	const openModal = () => {
 		setModalOpen(true);
 	};
 
+	/**
+	 * Closes the modal.
+	 * @function
+	 * @inner
+	 */
 	const closeModal = () => {
 		setModalOpen(false);
 	};
@@ -56,9 +73,12 @@ function FavoriteEpisodes(props) {
 	);
 }
 
+/**
+ * PropTypes for the FavoriteEpisodes component.
+ * @property {Array} episodes - An array of favorite episodes.
+ */
 FavoriteEpisodes.propTypes = {
 	episodes: PropTypes.array,
-	FavoriteEpisodes: PropTypes.array,
 };
 
 export default FavoriteEpisodes;
