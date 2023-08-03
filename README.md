@@ -1,6 +1,6 @@
 # Author : Nelson Zongezile Malgas
 
-# Podcast App
+# The Audio Lounge
 
 This is a React-based Podcast App that allows users to browse and search for podcasts, view podcast details, and listen to episodes. The app also provides features for users to mark their favorite shows and submit feedback.
 
