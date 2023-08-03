@@ -13,7 +13,9 @@ import PropTypes from "prop-types";
  * @param {Function} props.onSignIn - A callback function called when the user successfully signs in.
  * @returns {JSX.Element} - JSX Element representing the Authentication component.
  */
-export const Authentication = ({ onSignIn }) => {
+export const Authentication = (props) => {
+	const { onSignIn } = props;
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isSignUp, setIsSignUp] = useState(false);
