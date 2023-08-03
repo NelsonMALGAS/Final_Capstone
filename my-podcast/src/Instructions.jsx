@@ -51,8 +51,8 @@ export const UserInstructions = () => {
 									</li>
 									<hr />
 									<li>
-										Click the <strong>Search button</strong> to filter the shows
-										based on your criteria.
+										Click the <strong>Genre button</strong> to filter the shows
+										based on the selected genre.
 									</li>
 									<hr />
 									<li>
@@ -62,6 +62,13 @@ export const UserInstructions = () => {
 									<hr />
 									<li>
 										Click on a show <strong>image</strong> to view its episodes.
+									</li>
+									<hr />
+									<li>
+										Open a show so it appears on{" "}
+										<strong>Mark Favorite Episodes</strong> then the user will
+										be able to mark their favorite Episodes when they click{" "}
+										<strong>Mark Favorite Episodes button</strong>
 									</li>
 									<hr />
 									<li>
