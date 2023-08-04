@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
  * @type {string}
  */
 // eslint-disable-next-line react-refresh/only-export-components
-const URL = "https://fcfjszkwzawiinbdnlto.supabase.co";
+const supabaseURL = "https://fcfjszkwzawiinbdnlto.supabase.co";
 
 /**
  * The anonymous access key for authentication with Supabase.
@@ -21,4 +21,4 @@ const ANON_KEY =
  *
  * @type {import('@supabase/supabase-js').SupabaseClient}
  */
-export const supabase = createClient(URL, ANON_KEY);
+export const supabase = createClient(supabaseURL, ANON_KEY);
