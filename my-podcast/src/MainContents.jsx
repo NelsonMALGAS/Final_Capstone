@@ -505,7 +505,7 @@ export default function MainContent(props) {
 			</button>
 			{publicUrlOpen && publicUrl && (
 				<div className="modal-body bg-light url-div">
-					<a href={publicUrl}>
+					<a href="#" onClick={openFavoriteShowsModal}>
 						<strong>Favorites_Link</strong>
 					</a>
 					<button
@@ -597,7 +597,7 @@ export default function MainContent(props) {
 			{/** Main Content */}
 			<div className="app">
 				<div className="container">
-					<div className="row">
+					<div className="row ">
 						<div className="carousel-wrapper" style={{ marginBottom: "50px" }}>
 							<Slider {...carouselSettings}>
 								{shows.map((show) => (
@@ -707,7 +707,7 @@ export default function MainContent(props) {
 						className={`modal ${isMinimized ? "minimized" : ""}`}
 						style={{ display: "block" }}
 					>
-						<div className="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md">
+						<div className="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md ">
 							<div className="modal-content">
 								<div className="modal-header bg-primary text-white">
 									<h5 className="modal-title">
@@ -782,7 +782,7 @@ export default function MainContent(props) {
 			</div>
 			{favoriteShowsModalOpen && (
 				<div className="modal" style={{ display: "block" }}>
-					<div className="modal-dialog modal-dialog-centered modal-md">
+					<div className="modal-dialog modal-dialog-centered modal-md my-modals">
 						<div className="modal-content">
 							<div className="modal-header bg-primary text-white">
 								<h5 className="modal-title">Favorite Shows</h5>
