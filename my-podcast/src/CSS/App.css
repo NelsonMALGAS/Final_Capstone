@@ -40,7 +40,6 @@ body {
 	justify-content: center;
 	align-items: center;
 	text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
-	text-decoration: underline;
 }
 
 .image {
@@ -236,8 +235,8 @@ strong .number {
 }
 
 a {
-	color: blue; /* Change hyperlink text color */
-	text-decoration: none; /* Remove underline */
+	color: blue;
+	text-decoration: none;
 }
 
 a:hover {
