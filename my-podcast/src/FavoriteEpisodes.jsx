@@ -110,34 +110,38 @@ export default function FavoriteEpisodes(props) {
 								></button>
 							</div>
 							<div className="modal-body bg-white p-4">
-								{episodes.map((episode, index) => (
-									<div
-										key={index}
-										className={`favorite-episode ${
-											!episode.checked ? "blur" : ""
-										}`}
-										style={!episode.checked ? { opacity: 0.5 } : {}}
-									>
-										<h4>
-											<strong>Season {episode.season}</strong> - Episode{" "}
-											{episode.episode}
-										</h4>
-										<h5>
-											<strong>Title:</strong> {episode.title}
-										</h5>
-										<p>{episode.description}</p>
-										<audio controls>
-											<source src={episode.file} type="audio/mpeg" />
-										</audio>
-										<CheckboxItem
-											id={id}
-											label="Favorite Episode"
-											checked={episode.checked}
-											onChange={handleEpisodeCheckboxChange(index)}
-										/>
-										<hr />
-									</div>
-								))}
+								{episodes.length === 0 ? (
+									<h3>There are no favorite episodes selected</h3>
+								) : (
+									episodes.map((episode, index) => (
+										<div
+											key={index}
+											className={`favorite-episode ${
+												!episode.checked ? "blur" : ""
+											}`}
+											style={!episode.checked ? { opacity: 0.5 } : {}}
+										>
+											<h4>
+												<strong>Season {episode.season}</strong> - Episode{" "}
+												{episode.episode}
+											</h4>
+											<h5>
+												<strong>Title:</strong> {episode.title}
+											</h5>
+											<p>{episode.description}</p>
+											<audio controls>
+												<source src={episode.file} type="audio/mpeg" />
+											</audio>
+											<CheckboxItem
+												id={id}
+												label="Favorite Episode"
+												checked={episode.checked}
+												onChange={handleEpisodeCheckboxChange(index)}
+											/>
+											<hr />
+										</div>
+									))
+								)}
 							</div>
 						</div>
 					</div>
