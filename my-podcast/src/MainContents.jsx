@@ -4,7 +4,6 @@ import { genres } from "./genreMapping";
 import {
 	saveToLocalStorage,
 	getFromLocalStorage,
-	removeFromLocalStorage,
 } from "./localStorage/locaLStorage";
 import { Authentication } from "./Authentication";
 import { supabase } from "./supabase";
@@ -13,6 +12,12 @@ import Fuse from "fuse.js";
 import { fuseOptions } from "./FuseOptions";
 import Slider from "react-slick";
 import { carouselSettings } from "./Corousel";
+import generateUUID from "./uuidGen";
+import { CheckboxItem } from "./checkbox";
+import { resetProgress } from "./resetProg";
+import { Loading } from "./Loading";
+import PropTypes from "prop-types";
+import FavoriteEpisodes from "./FavoriteEpisodes";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.css";
@@ -21,38 +26,50 @@ import "./CSS/App.css";
 /**
  * This component displays the App Elements to the HTML
  *
- * @returns {JSX.Element}  JSX Element representing the MainContent component
+ * @returns {JSX.Element}  JSX Element representing the MainContents component
  */
-export default function MainContent() {
-	// State variables
-	const [shows, setShows] = useState(getFromLocalStorage("shows") || []);
+export default function MainContent(props) {
+	const {
+		shows,
+		setShows,
+		favoriteShows,
+		setFavoriteShows,
+		isAuthenticated,
+		setIsAuthenticated,
+		selectedGenre,
+		setSelectedGenre,
+		seasons,
+		setSeasons,
+		episodes,
+		setEpisodes,
+		filteredShows,
+		setFilteredShows,
+	} = props;
+
 	const [loading, setLoading] = useState(true);
 	const [searchValue, setSearchValue] = useState("");
-	const [filteredShows, setFilteredShows] = useState([]);
-	const [seasons, setSeasons] = useState([]);
-	const [episodes, setEpisodes] = useState([]);
+	const [images, setImages] = useState([]);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [showEpisodesDescription, setShowEpisodesDescription] = useState(false);
-	const [selectedGenre, setSelectedGenre] = useState("");
-	const [favoriteShows, setFavoriteShows] = useState(
-		getFromLocalStorage("favoriteShows") || [],
-	);
 	const [favoriteShowsModalOpen, setFavoriteShowsModalOpen] = useState(false);
 	const [favoriteShowsTime, setFavoriteShowsTime] = useState(
-		getFromLocalStorage("favoriteShowsTime") || {},
+		getFromLocalStorage("favoriteShowsTime") || [],
 	);
 	const [sortOrder, setSortOrder] = useState("asc");
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isMinimized, setIsMinimized] = useState(false);
 	const [publicUrl, setPublicUrl] = useState("");
 	const [publicUrlOpen, setPublicUrlOpen] = useState(false);
+	const [favCheckboxes, setFavCheckboxes] = useState(
+		getFromLocalStorage() || {},
+	);
+	const [favoriteEpisodes, setFavoriteEpisodes] = useState([]);
 
 	useEffect(() => {
 		const userToken = getFromLocalStorage("userToken");
 		if (userToken) {
 			setIsAuthenticated(true);
 		}
-	}, []);
+	}, [setIsAuthenticated]);
 
 	/**
 	 * useEffect Hook to fetch shows data from API
@@ -68,7 +85,11 @@ export default function MainContent() {
 				console.error(error);
 				setLoading(false);
 			});
-	}, []);
+	}, [setShows]);
+
+	useEffect(() => {
+		saveToLocalStorage("favCheckboxes", JSON.stringify(favCheckboxes));
+	}, [favCheckboxes]);
 
 	/**
 	 * Toggle the "show more" state of a show/preview's description
@@ -115,9 +136,9 @@ export default function MainContent() {
 			if (response.ok) {
 				const data = await response.json();
 				const seasons = data.seasons;
+				const imgs = data.image;
 				const allEpisodes = [];
 				const allSeasons = [];
-
 				seasons.forEach((season, index) => {
 					const seasonNumber = index + 1;
 					allSeasons.push(`Season ${seasonNumber}`);
@@ -130,6 +151,7 @@ export default function MainContent() {
 				});
 				setEpisodes(allEpisodes);
 				setSeasons(allSeasons);
+				setImages(imgs);
 				setDialogOpen(true);
 			} else {
 				throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -140,17 +162,26 @@ export default function MainContent() {
 			setLoading(false);
 		}
 	};
-
+	//-------------------------------------------------------------------------
 	/**
-	 * Handles the sign-in action
+	 * Handles Sign-In
 	 */
 	const handleSignIn = () => {
 		setIsAuthenticated(true);
+		sessionStorage.setItem("isAuthenticated", "true");
 	};
 
-	/**
-	 * Handles the sign-out action
-	 */
+	useEffect(() => {
+		const userToken = getFromLocalStorage("userToken");
+		const isAuthenticated =
+			sessionStorage.getItem("isAuthenticated") === "true";
+
+		if (userToken || isAuthenticated) {
+			setIsAuthenticated(true);
+		}
+		setLoading(true);
+	}, [setIsAuthenticated]);
+
 	if (!isAuthenticated) {
 		return <Authentication onSignIn={handleSignIn} />;
 	}
@@ -166,13 +197,17 @@ export default function MainContent() {
 			const genre = genres.find((genre) => genre.code === code);
 			return genre ? genre.name : "Unknown Genre";
 		});
-		return genreNames.join(", "); // Join the genre names with a comma separator
+		return genreNames.join(" , "); // Join the genre names with a comma separator
 	}
 
 	/**
-	 * Handles the change event of the search input
+	 * Handles the input change events for search and genre filters.
 	 *
-	 * @param {object} event - The change event object
+	 * Also pulled in fuse.js for fuzzy seaching
+	 *
+	 * @param {Event} event - The input change event object.
+	 * @param {string} event.target.name - The name attribute of the input element.
+	 * @param {string} event.target.value - The value entered or selected in the input element.
 	 */
 	const handleInputChange = (event) => {
 		const { name, value } = event.target;
@@ -227,9 +262,9 @@ export default function MainContent() {
 			default:
 				break;
 		}
-
 		setFilteredShows(filtered);
 	};
+	//--------------------------------------------------------
 
 	/**
 	 * Handles toggling the favorite status of a show
@@ -266,7 +301,6 @@ export default function MainContent() {
 		});
 
 		try {
-			// Use the Supabase query to upsert data into "The Audio Lounge" table
 			const { data, error } = await supabase
 				.from("The Audio Lounge")
 				.upsert({ showId: JSON.stringify(favTitles) }, { showId });
@@ -322,21 +356,60 @@ export default function MainContent() {
 		return sortedFavoriteShows;
 	}
 
+	/**
+	 * Opens or closes the modal displaying favorite TV shows.
+	 *
+	 */
 	const openFavoriteShowsModal = () => {
 		setFavoriteShowsModalOpen((prevState) => !prevState);
 	};
 
+	/**
+	 * Handles the change event when the user selects a different sort order.
+	 *
+	 * @param {Event} event - The change event object.
+	 * @param {string} event.target.value - The value of the selected sort order.
+	 */
 	const handleSortOrderChange = (event) => {
 		const sortOrder = event.target.value;
 		setSortOrder(sortOrder);
 	};
 
+	/**
+	 * Closes the dialog if it is not minimized.
+	 * Prompts the user for confirmation before closing the dialog.
+	 *
+	 */
 	const closeDialog = () => {
 		if (!isMinimized) {
 			const response = prompt("Do you want to close the episode?");
 			if (response === "" || response.toLowerCase() === "ok") {
 				setDialogOpen(false);
 			}
+		}
+	};
+
+	/**
+	 * Function to handle checkbox change for individual checkboxes
+	 * @param {string} checkboxId - The ID of the checkbox
+	 */
+	const handleCheckboxChange = (checkboxId) => (event) => {
+		const { checked } = event.target;
+		setFavCheckboxes((prevCheckboxes) => ({
+			...prevCheckboxes,
+			[checkboxId]: checked,
+		}));
+
+		const index = parseInt(checkboxId.split("-")[1]);
+		if (checked) {
+			setFavoriteEpisodes((prevFavoriteEpisodes) => [
+				...prevFavoriteEpisodes,
+				episodes[index],
+			]);
+		} else {
+			setFavoriteEpisodes((prevFavoriteEpisodes) =>
+				prevFavoriteEpisodes.filter((episode) => episode !== episodes[index]),
+			);
 		}
 	};
 
@@ -357,7 +430,7 @@ export default function MainContent() {
 			};
 
 			selectedAudio.addEventListener("pause", saveAudioProgress);
-			window.addEventListener("beforeunload", saveAudioProgress);
+			window.addEventListener("unload", saveAudioProgress);
 
 			(async () => {
 				try {
@@ -367,9 +440,7 @@ export default function MainContent() {
 					const savedProgressPercentage = await getFromLocalStorage(
 						`progressPercentage-${selectedAudioId}`,
 					);
-
 					if (savedCurrentTime !== null && savedProgressPercentage !== null) {
-						// Set the audio player's current time based on the saved data
 						selectedAudio.currentTime = parseFloat(savedCurrentTime);
 					}
 				} catch (error) {
@@ -377,20 +448,6 @@ export default function MainContent() {
 				}
 			})();
 		}
-	};
-
-	const resetProgress = () => {
-		for (const key in localStorage) {
-			if (
-				key.startsWith("currentTime-") ||
-				key.startsWith("progressPercentage-") ||
-				key.startsWith("fullyListened-")
-			) {
-				removeFromLocalStorage(key);
-			}
-		}
-		removeFromLocalStorage("currentTime-");
-		removeFromLocalStorage("progressPercentage");
 	};
 
 	const generatePublicURL = () => {
@@ -402,7 +459,6 @@ export default function MainContent() {
 		const favoritesParam = favTitles.join(",");
 		const baseUrl = window.location.href.split("?")[0];
 		const publicUrl = `${baseUrl}?favorites=${favoritesParam}`;
-
 		return publicUrl;
 	};
 
@@ -415,17 +471,8 @@ export default function MainContent() {
 		setPublicUrlOpen(true);
 	};
 
-	/**
-	 * Handles the loading state while the system is still fetching data
-	 */
 	if (loading) {
-		return (
-			<div className="spinner-container text-primary">
-				<div className="spinner-border" role="status">
-					<span className="visually-hidden">Loading...</span>
-				</div>
-			</div>
-		);
+		<Loading />;
 	}
 	<Authentication />;
 
@@ -451,24 +498,37 @@ export default function MainContent() {
 	return (
 		<>
 			<button
-				className="btn btn-secondary fav-btn"
+				className="btn btn-secondary  fav-btn"
 				onClick={handleGeneratePublicURL}
 			>
 				Favorites URL
 			</button>
 			{publicUrlOpen && publicUrl && (
-				<div className="modal-body bg-dark">
-					<a href={publicUrl} style={{ color: "white" }}>
-						{publicUrl}
+				<div className="modal-body bg-light url-div">
+					<a href={publicUrl}>
+						<strong>Favorites_Link</strong>
 					</a>
 					<button
-						className="btn btn-danger"
+						className="btn btn-danger  close"
 						onClick={() => setPublicUrlOpen(false)}
 					>
 						close
 					</button>
 				</div>
 			)}
+
+			<FavoriteEpisodes
+				favoriteEpisodes={favoriteEpisodes}
+				setFavoriteEpisodes={setFavoriteEpisodes}
+				episodes={episodes}
+				checked={
+					favCheckboxes[
+						`favCheck-${episodes.map((episode) => episode.index)}`
+					] || false
+				}
+				id={`favCheck-${episodes.map((episode) => episode.index)}`}
+				handleCheckboxChange={handleCheckboxChange}
+			/>
 			<div className="container-fluid">
 				<nav className="navbar navbar-light bg-light navbar-expand-lg py-3 ">
 					<div className="container-fluid">
@@ -672,6 +732,7 @@ export default function MainContent() {
 									</button>
 								</div>
 								<div className="modal-body bg-white p-4">
+									<img src={images} alt={images} />
 									{episodes.map((eps, index) => (
 										<div key={index} className="episode mb-4 bg-light">
 											<h4>
@@ -705,6 +766,12 @@ export default function MainContent() {
 												<source src={eps.file} type="audio/mpeg" />
 												This browser does not support HTML 5 audio
 											</audio>
+											<CheckboxItem
+												id={`favCheck-${index}`}
+												label="Favorite"
+												checked={favCheckboxes[`favCheck-${index}`] || false}
+												onChange={handleCheckboxChange(`favCheck-${index}`)}
+											/>
 										</div>
 									))}
 								</div>
@@ -725,18 +792,21 @@ export default function MainContent() {
 									aria-label="Close"
 								></button>
 							</div>
-							<div className="modal-body bg-white p-4">
+							<div key={generateUUID()} className="modal-body bg-white p-4">
 								<div className="form-check mb-3">
 									<input
 										type="radio"
 										className="form-check-input"
 										id="sortAsc"
 										value="titleAsc"
-										checked={sortOrder === "TitleAsc"}
+										checked={sortOrder === "titleAsc"}
 										onChange={handleSortOrderChange}
 									/>
 									<label className="form-check-label" htmlFor="titleAsc">
-										<strong>Sort by Title (A to Z)</strong>
+										<strong>
+											Sort by Title (A to Z){" "}
+											<span style={{ color: "blue" }}>- Default</span>
+										</strong>
 									</label>
 								</div>
 								<div className="form-check mb-3">
@@ -781,16 +851,29 @@ export default function MainContent() {
 								{/* Use the sortFavoriteShows function to sort by selected option */}
 								{sortFavoriteShows(favoriteShows, shows, sortOrder).map(
 									(show) => (
-										<div key={show.id} className="favorite-show">
-											<img
-												src={show.image}
-												alt={show.id}
-												style={{ width: "60px", height: "50px" }}
-											/>
-											<h4>{show.title}</h4>
-											<p>
-												Updated: {new Date(show.updated).toLocaleDateString()}
-											</p>
+										<div key={show?.id} className="favorite-show">
+											{/**  optional chaining (?.) */}
+											{show?.image && (
+												<img
+													src={show.image}
+													alt={show.id}
+													style={{ width: "60px", height: "50px" }}
+												/>
+											)}
+											{show ? (
+												<>
+													<h4>{show.title}</h4>
+													<h5>Seasons: {show.seasons}</h5>
+													<h6>Genre(s): {getGenreName(show.genres)}</h6>
+													<p>
+														Updated:{" "}
+														{new Date(show.updated).toLocaleDateString()}
+													</p>
+													<hr />
+												</>
+											) : (
+												<p></p>
+											)}
 										</div>
 									),
 								)}
@@ -803,3 +886,19 @@ export default function MainContent() {
 		</>
 	);
 }
+MainContent.propTypes = {
+	shows: PropTypes.array.isRequired,
+	setShows: PropTypes.func.isRequired,
+	favoriteShows: PropTypes.array.isRequired,
+	setFavoriteShows: PropTypes.func.isRequired,
+	isAuthenticated: PropTypes.bool.isRequired,
+	setIsAuthenticated: PropTypes.func.isRequired,
+	selectedGenre: PropTypes.string.isRequired,
+	setSelectedGenre: PropTypes.func.isRequired,
+	seasons: PropTypes.array.isRequired,
+	setSeasons: PropTypes.func.isRequired,
+	episodes: PropTypes.array.isRequired,
+	setEpisodes: PropTypes.func.isRequired,
+	filteredShows: PropTypes.array.isRequired,
+	setFilteredShows: PropTypes.func.isRequired,
+};
