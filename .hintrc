@@ -8,5 +8,8 @@
     "not and_ff <= 113",
     "not firefox <= 113",
     "not opera <= 99"
-  ]
+  ],
+  "hints": {
+    "manifest-file-extension": "off"
+  }
 }

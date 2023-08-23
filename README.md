@@ -28,7 +28,7 @@ This is a React-based Podcast App that allows users to browse and search for pod
 
 ### 1. React and its associated dependencies:
 
-- react & react-dom:: npm install vite@latest
+- react & react-dom:: npm create vite@latest
 
 ### 2. Fuse.js - A lightweight fuzzy-search library for JavaScript:
 
